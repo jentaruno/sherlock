@@ -79,12 +79,6 @@
     "urlMain": "https://www.bandcamp.com/",
     "username_claimed": "blue"
   },
-  "Behance": {
-    "errorType": "status_code",
-    "url": "https://www.behance.net/{}",
-    "urlMain": "https://www.behance.net/",
-    "username_claimed": "blue"
-  },
   "Bezuzyteczna": {
     "errorType": "status_code",
     "url": "https://bezuzyteczna.pl/uzytkownicy/{}",
