@@ -845,8 +845,6 @@ def req_json(username, extra):
                        proxy=None,
                        timeout=60)
     results_json = jsonify_sites(results)
-    if instagram is not None:
-        results_json.append(instagram)
 
     json_data = {
         "username": username,
