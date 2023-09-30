@@ -19,7 +19,6 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from time import monotonic
 
 import requests
-
 from requests_futures.sessions import FuturesSession
 from torrequest import TorRequest
 from result import QueryStatus
@@ -680,7 +679,7 @@ def main():
         else:
             all_usernames.append(username)
     for username in all_usernames:
-
+        # check_instagram(username)
         results = sherlock(username,
                            site_data,
                            query_notify,
@@ -737,7 +736,7 @@ def main():
                     "status": str(results[site]["status"].status),
                     "httpStatus": results[site]["http_status"],
                     "responseTime": response_time_s
-                    })
+                })
 
             # Writing to json file
             with open(result_file, "w") as outfile:
@@ -762,7 +761,8 @@ def main():
                                  ]
                                 )
                 for site in results:
-                    if args.print_found and not args.print_all and results[site]["status"].status != QueryStatus.CLAIMED:
+                    if args.print_found and not args.print_all and results[site][
+                        "status"].status != QueryStatus.CLAIMED:
                         continue
 
                     response_time_s = results[site]["status"].query_time
@@ -801,21 +801,33 @@ def main():
                 exists.append(str(results[site]["status"].status))
                 http_status.append(results[site]["http_status"])
 
-            DataFrame = pd.DataFrame({"username": usernames, "name": names, "url_main": url_main, "url_user": url_user, "exists": exists, "http_status": http_status, "response_time_s": response_time_s})
+            DataFrame = pd.DataFrame(
+                {"username": usernames, "name": names, "url_main": url_main, "url_user": url_user, "exists": exists,
+                 "http_status": http_status, "response_time_s": response_time_s})
             DataFrame.to_excel(f'{username}.xlsx', sheet_name='sheet1', index=False)
 
         print()
 
-    # Testing our req_json function
+    # # Testing our req_json function
     # for username in all_usernames:
     #     req_json(username)
 
+    # for username in all_usernames:
+    #     json_data = select_site(username, "Clubhouse")
+    #     print(json_data)
+
     query_notify.finish()
 
-def req_json(username):
+
+def req_json(username, extra):
     # Load list of sites to look in
-    sites = SitesInformation(os.path.join(
-        os.path.dirname(__file__), "resources/data.json"))
+    if extra:
+        sites = SitesInformation(os.path.join(
+            os.path.dirname(__file__), "resources/data_extra.json"))
+    else:
+        sites = SitesInformation(os.path.join(
+            os.path.dirname(__file__), "resources/data.json"))
+
     site_data = {site.name: site.information for site in sites}
 
     # Query notify (not really needed but just to feed the sherlock function enough args
@@ -832,13 +844,16 @@ def req_json(username):
                        unique_tor=False,
                        proxy=None,
                        timeout=60)
+    results_json = jsonify_sites(results)
+    if instagram is not None:
+        results_json.append(instagram)
+
     json_data = {
         "username": username,
-        "sites": jsonify_sites(results),
+        "sites": results_json,
     }
     print(json_data)
     return json_data
-
 
 def jsonify_sites(results):
     sites = []
@@ -859,6 +874,38 @@ def jsonify_sites(results):
         })
 
     return sites
+
+
+def select_site(username, selected_site):
+    # User desires to selectively run queries on a sub-set of the site list.
+    # Make sure that the sites are supported & build up pruned site database.
+    site_data = {}
+    sites = SitesInformation(os.path.join(
+        os.path.dirname(__file__), "resources/data.json"))
+    site_data_all = {site.name: site.information for site in sites}
+
+    for existing_site in site_data_all:
+        if selected_site.lower() == existing_site.lower():
+            site_data[existing_site] = site_data_all[existing_site]
+
+    if not site_data:
+        sys.exit(1)
+
+    query_notify = QueryNotifyPrint(result=None,
+                                    verbose=False,
+                                    print_all=False,
+                                    browse=False)
+
+    # Load search results
+    results = sherlock(username,
+                       site_data,
+                       query_notify,
+                       tor=False,
+                       unique_tor=False,
+                       proxy=None,
+                       timeout=60)
+    json_data = jsonify_sites(results)
+    return json_data
 
 
 if __name__ == "__main__":
