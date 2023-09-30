@@ -1,9 +1,9 @@
 import os
 
-from sherlock.notify import QueryNotifyPrint
-from sherlock.result import QueryStatus
-from sherlock.sherlock import sherlock
-from sherlock.sites import SitesInformation
+from notify import QueryNotifyPrint
+from result import QueryStatus
+import sherlock
+from sites import SitesInformation
 
 
 def req_json(username):
