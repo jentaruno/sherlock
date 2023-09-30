@@ -819,7 +819,10 @@ def main():
     query_notify.finish()
 
 
-def req_json(username, extra):
+def req_json(username, extra, query_notify=QueryNotifyPrint(result=None,
+                                                            verbose=False,
+                                                            print_all=False,
+                                                            browse=False)):
     # Load list of sites to look in
     if extra:
         sites = SitesInformation(os.path.join(
@@ -830,11 +833,11 @@ def req_json(username, extra):
 
     site_data = {site.name: site.information for site in sites}
 
-    # Query notify (not really needed but just to feed the sherlock function enough args
-    query_notify = QueryNotifyPrint(result=None,
-                                    verbose=False,
-                                    print_all=False,
-                                    browse=False)
+    # # Query notify (not really needed but just to feed the sherlock function enough args
+    # query_notify = QueryNotifyPrint(result=None,
+    #                                 verbose=False,
+    #                                 print_all=False,
+    #                                 browse=False)
 
     # Load search results
     results = sherlock(username,
