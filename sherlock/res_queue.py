@@ -112,7 +112,6 @@ class QueryNotifyQueue(QueryNotify):
         Nothing.
         """
 
-        print("stop")
         self.queue.put({
             "stop": message
         }) 

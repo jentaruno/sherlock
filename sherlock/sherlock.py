@@ -855,7 +855,7 @@ def req_json(username, extra, query_notify=QueryNotifyPrint(result=None,
         "username": username,
         "sites": results_json,
     }
-    print("all fetched")
+    print(json_data)
     return json_data
 
 def jsonify_sites(results):
