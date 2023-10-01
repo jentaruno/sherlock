@@ -833,6 +833,9 @@ def req_json(username, extra, query_notify=QueryNotifyPrint(result=None,
         sites = SitesInformation(os.path.join(
             os.path.dirname(__file__), "resources/data.json"))
 
+    # this is a christian sherlock repo
+    sites.remove_nsfw_sites()
+
     site_data = {site.name: site.information for site in sites}
 
     # # Query notify (not really needed but just to feed the sherlock function enough args

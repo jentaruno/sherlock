@@ -35,6 +35,13 @@ class QueryNotifyQueue(QueryNotify):
 
         return 
 
+    def clearQueue(self):
+        """
+        Clears the queue held by this instance.
+        """
+        while not self.queue.empty():
+            self.queue.get()
+
     def queueEmpty(self):
         """
         Returns whether the queue holding messages is empty.
@@ -55,7 +62,7 @@ class QueryNotifyQueue(QueryNotify):
 
         if self.queue.empty():
             return None
-        return self.queue.get(True)
+        return self.queue.get()
 
     def start(self, message):
         """Notify Start.
