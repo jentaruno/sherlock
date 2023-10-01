@@ -98,9 +98,7 @@ class QueryNotifyQueue(QueryNotify):
                 "httpStatus": result.http_status,
                 "responseTime": result.query_time
             }
-            self.queue.put({
-                "site": rsp
-            })
+            self.queue.put(rsp)
 
     def finish(self, message="Search completed"):
         """Notify Finish.
