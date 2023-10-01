@@ -433,7 +433,8 @@ def sherlock(username, site_data, query_notify,
                              site_url_user=url,
                              status=query_status,
                              query_time=response_time,
-                             context=error_context)
+                             context=error_context,
+                             http_status=http_status)
         query_notify.update(result)
 
         # Save status of request
@@ -446,6 +447,7 @@ def sherlock(username, site_data, query_notify,
         # Add this site's results into final dictionary with all of the other results.
         results_total[social_network] = results_site
 
+    query_notify.finish()
     return results_total
 
 
@@ -853,7 +855,7 @@ def req_json(username, extra, query_notify=QueryNotifyPrint(result=None,
         "username": username,
         "sites": results_json,
     }
-    print(json_data)
+    print("all fetched")
     return json_data
 
 def jsonify_sites(results):

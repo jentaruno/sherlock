@@ -32,7 +32,7 @@ class QueryResult():
     Describes result of query about a given username.
     """
     def __init__(self, username, site_name, site_url_user, status,
-                 query_time=None, context=None):
+                 query_time=None, context=None, http_status=None):
         """Create Query Result Object.
 
         Contains information about a specific method of detecting usernames on
@@ -56,6 +56,8 @@ class QueryResult():
                                   an error, this might indicate the type of
                                   error that occurred.
                                   Default of None.
+        site_url_user          -- String containing URL for main site
+        http_status            -- Number indicating response code of HTTP request
 
         Return Value:
         Nothing.
@@ -67,6 +69,7 @@ class QueryResult():
         self.status        = status
         self.query_time    = query_time
         self.context       = context
+        self.http_status   = http_status
 
         return
 

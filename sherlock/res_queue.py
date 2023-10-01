@@ -1,5 +1,6 @@
+from notify import QueryNotify
+from result import QueryStatus, QueryResult
 from sherlock import jsonify_sites
-from result import QueryNotify
 import queue
 
 class QueryNotifyQueue(QueryNotify):
@@ -30,21 +31,20 @@ class QueryNotifyQueue(QueryNotify):
         self.verbose = verbose
         self.print_all = print_all
         self.browse = browse
-        self.queue = queue.Queue()
+        self.queue = queue.SimpleQueue()
 
         return 
 
-    def queueEmpty():
+    def queueEmpty(self):
         """
         Returns whether the queue holding messages is empty.
 
         Return value:
         boolean
         """
-
         return self.queue.empty()
 
-    def queuePop():
+    def queuePop(self):
         """
         Removes and returns the next item from the message queue.
         If the queue is empty, returns None.
@@ -53,9 +53,9 @@ class QueryNotifyQueue(QueryNotify):
         JSON object
         """
 
-        if queueEmpty():
+        if self.queue.empty():
             return None
-        return self.queue.get()
+        return self.queue.get(True)
 
     def start(self, message):
         """Notify Start.
@@ -71,8 +71,7 @@ class QueryNotifyQueue(QueryNotify):
         Nothing.
         """
 
-        print(message)
-        queue.put({
+        self.queue.put({
             "start": message
         })
 
@@ -90,10 +89,18 @@ class QueryNotifyQueue(QueryNotify):
         Nothing.
         """
 
-        print(jsonify_sites([result]))
-        queue.put({
-            "site": jsonify_sites([result])
-        })
+        if result.status == QueryStatus.CLAIMED:
+            rsp = {
+                "site": result.site_name,
+                "urlMain": result.site_url_user,
+                "urlUser": result.site_url_user,
+                "status": str(result.status),
+                "httpStatus": result.http_status,
+                "responseTime": result.query_time
+            }
+            self.queue.put({
+                "site": rsp
+            })
 
     def finish(self, message="Search completed"):
         """Notify Finish.
@@ -105,7 +112,7 @@ class QueryNotifyQueue(QueryNotify):
         Nothing.
         """
 
-        print(message)
-        queue.put({
+        print("stop")
+        self.queue.put({
             "stop": message
         }) 
